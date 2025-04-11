@@ -1,0 +1,54 @@
+@my_blog_service_HostAddress = http://localhost:5249
+
+GET {{my_blog_service_HostAddress}}/api/blog
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJibG9nLWFwcCIsImp0aSI6IjgzMWI2YzY1LWZiMzYtNGJmZS1iMTQyLTM0M2Y3OTdlZDlhNyIsImV4cCI6MTc0NDMyOTQ0MiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5L2FwaS9ibG9nIn0.FscUmNUUqZF5qSNaL_tdAk5qSEzKl1bFIVK5xiNTt-Y
+###
+
+### Create a new blog post
+POST http://localhost:5249/api/blog
+Content-Type: application/json
+X-API-Key: my_secret_key
+
+{
+  "title": "My First Blog Post",
+  "content": "This is the content of my first blog post. It's exciting to share this!",
+  "headerImageUrl": "https://example.com/images/header.jpg",
+  "datePosted": "2025-03-04T10:00:00Z",
+  "authorId": 1,
+  "authorName": "Jane Doe"
+}
+
+### Create a new blog post
+POST http://localhost:5249/api/blog
+Content-Type: application/json
+Authorization: Basic YWRtaW46cGFzc3dvcmQ=
+
+{
+  "title": "My First Blog Post",
+  "content": "This is the content of my first blog post. It's exciting to share this!",
+  "headerImageUrl": "https://example.com/images/header.jpg",
+  "datePosted": "2025-03-04T10:00:00Z",
+  "authorId": 2,
+  "authorName": "Jane Doe"
+}
+
+### request token
+POST http://localhost:5249/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=blog-app&client_secret=blog-secret
+
+### POST Request
+POST http://localhost:5249/api/blog
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJibG9nLWFwcCIsImp0aSI6IjgzMWI2YzY1LWZiMzYtNGJmZS1iMTQyLTM0M2Y3OTdlZDlhNyIsImV4cCI6MTc0NDMyOTQ0MiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5L2FwaS9ibG9nIn0.FscUmNUUqZF5qSNaL_tdAk5qSEzKl1bFIVK5xiNTt-Y
+
+{
+  "title": "My Second Blog Post",
+  "content": "This is the content of my first blog post. It's exciting to share this!",
+  "headerImageUrl": "https://example.com/images/header.jpg",
+  "datePosted": "2025-03-04T10:00:00Z",
+  "authorId": 1,
+  "authorName": "Jane Doe"
+}
