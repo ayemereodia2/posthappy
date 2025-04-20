@@ -40,15 +40,34 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=client_credentials&client_id=blog-app&client_secret=blog-secret
 
 ### POST Request
-POST http://localhost:5249/api/blog
+POST http://localhost:5249/api/blog/createblog
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJibG9nLWFwcCIsImp0aSI6IjgzMWI2YzY1LWZiMzYtNGJmZS1iMTQyLTM0M2Y3OTdlZDlhNyIsImV4cCI6MTc0NDMyOTQ0MiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5IiwiYXVkIjoiaHR0cDovL2xvY2FsaG9zdDo1MjQ5L2FwaS9ibG9nIn0.FscUmNUUqZF5qSNaL_tdAk5qSEzKl1bFIVK5xiNTt-Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJvZGlhZGF2aWQyQGdtYWlsLmNvbSIsImp0aSI6ImY1ODViMmIzLThmNDYtNGE5ZS1iNjg1LTViZDY3MDdjYTk5YiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWVpZGVudGlmaWVyIjoiOTM0YzY2OTQtYjQ4Zi00OGNkLWEwODktMmMxZDU0OWZlNTU4IiwiZXhwIjoxNzQ1MjY3NTE4LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyNDkiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyNDkvYXBpL2Jsb2cifQ.DEhQYc2hJK3B99DXp8qc9JPVRHLPxdVk48zBhy4lfjc
 
 {
-  "title": "My Second Blog Post",
-  "content": "This is the content of my first blog post. It's exciting to share this!",
+  "title": "How I linked my Identity model and Blog objects",
+  "content": "How i linked it al; first blog post. It's exciting to share this!",
   "headerImageUrl": "https://example.com/images/header.jpg",
   "datePosted": "2025-03-04T10:00:00Z",
-  "authorId": 1,
-  "authorName": "Jane Doe"
+  "authorName": "Ayemere Doe"
+}
+
+### User Registration POST request
+POST http://localhost:5249/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "odiadavid2@gmail.com",
+  "firstName": "Ayemere",
+  "lastName": "Odia",
+  "password": "Aye5089mere@"
+}
+
+### User Login POST request
+POST http://localhost:5249/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "odiadavid2@gmail.com",
+  "password": "Aye5089mere@"
 }

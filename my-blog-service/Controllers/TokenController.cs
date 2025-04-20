@@ -31,12 +31,12 @@ public class TokenController : ControllerBase
             return BadRequest("Invalid request");
         }
 
-        if (!_tokenService.ValidateClient(clientId, clientSecret))
+        if (!_tokenService.ValidateAPIClient(clientId, clientSecret))
         {
             return Unauthorized();
         }
 
-        var token = _tokenService.GenerateToken(clientId);
+        var token = _tokenService.GenerateTokenForAPIClient(clientId);
         return Ok(new
         {
             access_token = token,

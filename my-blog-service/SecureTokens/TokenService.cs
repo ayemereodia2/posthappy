@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using blog_core.entities;
 using Microsoft.IdentityModel.Tokens;
 
 namespace my_blog_service
@@ -17,7 +18,7 @@ namespace my_blog_service
             _config = config;
         }
 
-    public string GenerateToken(string clientId)
+    public string GenerateTokenForAPIClient(string clientId)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -39,7 +40,30 @@ namespace my_blog_service
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool ValidateClient(string clientId, string clientSecret)
+    public string GenerateToken(ApplicationUser user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(24),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    public bool ValidateAPIClient(string clientId, string clientSecret)
     {
         var validClientId = _config["Clients:BlogClient:ClientId"];
         var validSecret = _config["Clients:BlogClient:ClientSecret"];

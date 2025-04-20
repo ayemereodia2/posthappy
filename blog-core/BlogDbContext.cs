@@ -14,6 +14,16 @@ namespace blog_core
         }
 
         public DbSet<Blog> Blogs { get; set; }
+
+         protected override void OnModelCreating(ModelBuilder builder)
+        {
+                base.OnModelCreating(builder);
+                builder.Entity<Blog>()
+                .HasOne(b => b.Author)
+                .WithMany()
+                .HasForeignKey(b => b.AuthorId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 
 }

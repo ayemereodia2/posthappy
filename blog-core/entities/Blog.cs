@@ -12,8 +12,9 @@ namespace blog_core.entities
         public string? Content { get; set; }  // Main content of the blog
         public string? HeaderImageUrl { get; set; }  // URL to the header image (optional)
         public DateTime DatePosted { get; set; }  // Date the blog was posted
-        public int AuthorId { get; set; }  // Author's identifier (e.g., from user system)
-        public string? AuthorName { get; set; }
+        public string? AuthorId { get; set; }  // Author's identifier (e.g., from user system)
+        public ApplicationUser? Author { get; set; }
+        public string? AuthorName  => $"{Author.FirstName} {Author.LastName}";
     }
 }
 /*public string? Category { get; set; }  // Category the blog belongs to (optional)

@@ -1,10 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using blog_core.Dto.RequestDto;
+using blog_core.Dto.ResponseDto;
 using blog_core.entities;
 using blog_core.interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace my_blog_service.Controllers
@@ -14,11 +19,15 @@ namespace my_blog_service.Controllers
     public class BlogController : ControllerBase
     {
         private readonly IBlogService _blogService;
-
+        private readonly UserManager<ApplicationUser> _userManager;
         // Constructor with dependency injection
-        public BlogController(IBlogService blogService)
+        public BlogController(
+            IBlogService blogService,
+            UserManager<ApplicationUser> userManager
+            )
         {
             _blogService = blogService;
+            _userManager = userManager;
         }
 
         // GET: api/blog
@@ -40,15 +49,24 @@ namespace my_blog_service.Controllers
 
         // GET: api/blog/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Blog>> GetBlogById(int id)
+        public async Task<ActionResult<BlogResponseDto>> GetBlogById(int id)
         {
             try
             {
-                var blog = await _blogService.GetBlogById(id);
-                if (blog == null)
+                var blogTemp = await _blogService.GetBlogById(id);
+                if (blogTemp == null)
                 {
                     return NotFound($"Blog with ID {id} not found"); // HTTP 404
                 }
+                var blog = new BlogResponseDto 
+                {
+                    Id = blogTemp.Id,
+                    Title = blogTemp.Title,
+                    Content = blogTemp.Content,
+                    HeaderImageUrl = blogTemp.HeaderImageUrl,
+                    DatePosted = blogTemp.DatePosted,
+                    AuthorName = blogTemp.AuthorName ?? "--"
+                };
                 return Ok(blog); // HTTP 200 with blog
             }
             catch (Exception ex)
@@ -59,8 +77,8 @@ namespace my_blog_service.Controllers
 
         // POST: api/blog
         [Authorize]
-        [HttpPost]
-        public async Task<ActionResult<Blog>> CreateBlog([FromBody] Blog blog)
+        [HttpPost("createblog")]
+        public async Task<ActionResult<Blog>> CreateBlog([FromBody] BlogRequestDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -69,13 +87,45 @@ namespace my_blog_service.Controllers
 
             try
             {
-                await _blogService.CreateBlog(blog);
-                // Return 201 Created with the new resource's URI and the blog
-                return CreatedAtAction(nameof(GetBlogById), new { id = blog.Id }, blog);
+                var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if(userEmail != null)
+                {
+                    var user = await _userManager.FindByEmailAsync(userEmail);
+                    if(user == null)
+                    {
+                        return Unauthorized(new BlogResponseDto{
+                            Success = false,
+                            Message = $"Unauthorized Access {userEmail}"
+                        });
+                    }
+
+                    var blog = new Blog
+                    {
+                        Title = model.Title,
+                        Content = model.Content,
+                        DatePosted = model.DatePosted,
+                        HeaderImageUrl = model.HeaderImageUrl,
+                        Author = user
+                    };
+
+
+                    await _blogService.CreateBlog(blog);
+                    // Return 201 Created with the new resource's URI and the blog
+                    return CreatedAtAction(nameof(GetBlogById), new { id = blog.Id }, blog);
+                }
+
+                 return Unauthorized(new BlogResponseDto{
+                            Success = false,
+                            Message = $"Unauthorized: User ID does not exist {userEmail}"
+                 });
+                
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "An error occurred while creating the blog: " + ex.Message);
+                return StatusCode(500, new BlogResponseDto {
+                    Success = false,
+                    Message = "An error occurred while creating the blog: " + ex.Message
+                });
             }
         }
 
