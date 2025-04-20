@@ -31,6 +31,7 @@ builder.Services.AddControllers();
 builder.Services.AddSingleton<TokenService>();
 //builder.Services.AddSession();
 
+var corsAllowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -62,18 +63,14 @@ builder.Services.AddAuthentication(
     });
 
 builder.Services.AddCors(options => {
-    options.AddPolicy("AllowAll", builder => {
-        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    options.AddPolicy("MyCorsPolicy", builder => {
+        builder
+        .WithOrigins(corsAllowedOrigins)
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
     });
 });
-// OAuth 2.0 configuration
-
-    /*services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "https://your-auth-server";
-        options.Audience = "your-api";
-    });*/
 
 var app = builder.Build();
 
@@ -91,9 +88,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting(); // Enables routing
 app.UseAuthentication();
+app.UseCors("MyCorsPolicy");
 app.UseAuthorization(); // Optional, if you have auth
 app.MapControllers();
-
-app.UseHttpsRedirection();
-
 app.Run();

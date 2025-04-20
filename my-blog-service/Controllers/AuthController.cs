@@ -132,11 +132,20 @@ namespace my_blog_service.Controllers
                 if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
                 {
                     var token = _tokenService.GenerateToken(user);
+
+                    // Set HttpOnly cookie
+                    Response.Cookies.Append("AuthToken", token, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true, // Only send over HTTPS
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddHours(1) // Match token expiration
+                    });
+
                     return CreatedAtAction(nameof(Login), new LoginResponseDto
                     {
                         Success = true,
                         Message = "Success",
-                        Token = token
                     });
                 }
                 else
